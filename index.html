@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Independence Day Greeting Card Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Patua+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --saffron: #FF9933;
+            --white: #FFFFFF;
+            --green: #138808;
+            --navy-blue: #000080;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-color: #333;
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--saffron) 33.33%, var(--white) 33.33%, var(--white) 66.66%, var(--green) 66.66%);
+            background-size: 400% 400%;
+            animation: tricolor-animation 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        @keyframes tricolor-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Welcome Overlay to get user interaction for audio */
+        #welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            color: white;
+            font-size: 1.5rem;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            text-align: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .container {
+            max-width: 450px;
+            width: 90%;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+        }
+
+        #ashok-chakra {
+            width: 250px;
+            height: 250px;
+            border: 3px solid var(--navy-blue);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0.1;
+            z-index: 1;
+            animation: spin 30s linear infinite;
+            animation-play-state: paused; /* Animation will start after click */
+        }
+
+        .spoke {
+            width: 3px;
+            height: 100%;
+            background-color: var(--navy-blue);
+            position: absolute;
+            left: calc(50% - 1.5px);
+            top: 0;
+            transform-origin: center;
+        }
+
+        .spoke:nth-child(1) { transform: rotate(0deg); }
+        .spoke:nth-child(2) { transform: rotate(15deg); }
+        .spoke:nth-child(3) { transform: rotate(30deg); }
+        .spoke:nth-child(4) { transform: rotate(45deg); }
+        .spoke:nth-child(5) { transform: rotate(60deg); }
+        .spoke:nth-child(6) { transform: rotate(75deg); }
+        .spoke:nth-child(7) { transform: rotate(90deg); }
+        .spoke:nth-child(8) { transform: rotate(105deg); }
+        .spoke:nth-child(9) { transform: rotate(120deg); }
+        .spoke:nth-child(10) { transform: rotate(135deg); }
+        .spoke:nth-child(11) { transform: rotate(150deg); }
+        .spoke:nth-child(12) { transform: rotate(165deg); }
+
+        header h1 {
+            font-family: 'Patua One', cursive;
+            color: var(--navy-blue);
+            font-size: 2.5rem;
+            margin: 0 0 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            margin: 0 0 20px;
+        }
+
+        #countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .timer-box {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 10px;
+            min-width: 70px;
+        }
+
+        .timer-box span {
+            display: block;
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--navy-blue);
+        }
+
+        .timer-box p {
+            font-size: 0.8rem;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        #quote-container {
+            margin: 30px 0;
+            padding: 15px;
+            border-left: 5px solid var(--saffron);
+            background: rgba(255, 153, 51, 0.1);
+            border-radius: 0 8px 8px 0;
+        }
+
+        #quote {
+            font-style: italic;
+            font-size: 0.95rem;
+            margin: 0 0 10px;
+        }
+
+        #quote-author {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--green);
+        }
+        
+        #greeting-message {
+            font-size: 1.1rem;
+            margin: 20px 0;
+            line-height: 1.6;
+            min-height: 50px;
+        }
+
+        .input-group {
+            margin-top: 20px;
+        }
+
+        #name-input {
+            width: calc(100% - 22px);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        #name-input:focus {
+            outline: none;
+            border-color: var(--saffron);
+            box-shadow: 0 0 8px rgba(255, 153, 51, 0.5);
+        }
+
+        .button {
+            display: inline-block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            transform: scale(1);
+        }
+        
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        #generate-btn {
+            background-color: var(--navy-blue);
+            color: var(--white);
+        }
+
+        #generate-btn:hover {
+            opacity: 0.9;
+        }
+
+        #share-btn {
+            background-color: #25D366;
+            color: var(--white);
+            display: none; /* Initially hidden */
+        }
+        
+        #share-btn:hover {
+            background-color: #128C7E;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #fff;
+            border-radius: 50%;
+            opacity: 1;
+            z-index: 10;
+            animation: firework-explode 1s forwards;
+        }
+
+        @keyframes firework-explode {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+        
+        @media (max-width: 480px) {
+            header h1 { font-size: 2rem; }
+            .container { padding: 20px; }
+            #countdown-timer { gap: 10px; }
+            .timer-box { min-width: 60px; }
+            .timer-box span { font-size: 1.5rem; }
+            #ashok-chakra { width: 200px; height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="welcome-overlay">
+        <div>
+            <p>🇮🇳</p>
+            <p>Tap anywhere to enter</p>
+        </div>
+    </div>
+    
+    <audio id="bg-song" src="independence.mp3" loop></audio>
+
+    <div class="container">
+        
+        <div id="ashok-chakra">
+            <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
+            <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
+            <div class="spoke"></div><div class="spoke"></div><div class="spoke"></div><div class="spoke"></div>
+        </div>
+        
+        <div class="content-wrapper">
+            <header>
+                <h1>Happy Independence Day!</h1>
+                <p>Create and share a personalized greeting.</p>
+            </header>
+    
+            <div id="countdown-timer">
+                <div class="timer-box"><span id="days">00</span><p>Days</p></div>
+                <div class="timer-box"><span id="hours">00</span><p>Hours</p></div>
+                <div class="timer-box"><span id="minutes">00</span><p>Minutes</p></div>
+                <div class="timer-box"><span id="seconds">00</span><p>Seconds</p></div>
+            </div>
+    
+            <p id="greeting-message">From the heart of India, <span id="days-left-msg"></span> before our nation's <span id="independence-year"></span> Independence Day.</p>
+    
+            <div id="quote-container">
+                <p id="quote"></p>
+                <p id="quote-author"></p>
+            </div>
+    
+            <div class="input-group">
+                <input type="text" id="name-input" placeholder="Enter your name">
+            </div>
+    
+            <button id="generate-btn" class="button">View Your Card</button>
+            <button id="share-btn" class="button">Share via WhatsApp</button>
+        </div>
+    </div>
+
+    <script>
+        const quotes = [
+            { quote: "Freedom is not worth having if it does not include the freedom to make mistakes.", author: "Mahatma Gandhi" },
+            { quote: "The sword of revolution is sharpened on the whetting stone of ideas.", author: "Bhagat Singh" },
+            { quote: "Give me blood, and I shall give you freedom!", author: "Subhas Chandra Bose" },
+            { quote: "Swaraj is my birthright and I shall have it.", author: "Bal Gangadhar Tilak" },
+            { quote: "A country's greatness lies in its undying ideals of love and sacrifice that inspire the mothers of the race.", author: "Sarojini Naidu" },
+            { quote: "So long as you do not achieve social liberty, whatever freedom is provided by the law is of no avail to you.", author: "B. R. Ambedkar" },
+            { quote: "इंकलाब जिंदाबाद!", author: "भगत सिंह" },
+            { quote: "सरफ़रोशी की तमन्ना अब हमारे दिल में है, देखना है ज़ोर कितना बाज़ु-ए-कातिल में है।", author: "रामप्रसाद बिस्मिल" },
+            { quote: "सारे जहाँ से अच्छा हिन्दोस्ताँ हमारा।", author: "अल्लामा इक़बाल" },
+            { quote: "जय जवान, जय किसान।", author: "लाल बहादुर शास्त्री" },
+            { quote: "आराम हराम है।", author: "जवाहरलाल नेहरू" },
+            { quote: "वन्दे मातरम्।", author: "बंकिमचंद्र चटर्जी" }
+        ];
+
+        // DOM Elements
+        const welcomeOverlay = document.getElementById('welcome-overlay');
+        const bgSong = document.getElementById('bg-song');
+        const ashokChakra = document.getElementById('ashok-chakra');
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minutesEl = document.getElementById('minutes');
+        const secondsEl = document.getElementById('seconds');
+        const daysLeftMsgEl = document.getElementById('days-left-msg');
+        const independenceYearEl = document.getElementById('independence-year');
+        const greetingMessageEl = document.getElementById('greeting-message');
+        const nameInput = document.getElementById('name-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const quoteEl = document.getElementById('quote');
+        const quoteAuthorEl = document.getElementById('quote-author');
+        
+        let selectedQuote = {};
+
+        // Start Music and Animation on First User Interaction
+        welcomeOverlay.addEventListener('click', () => {
+            bgSong.play().catch(e => console.error("Audio play failed:", e));
+            ashokChakra.style.animationPlayState = 'running';
+            
+            welcomeOverlay.style.opacity = '0';
+            setTimeout(() => {
+                welcomeOverlay.style.display = 'none';
+            }, 500); // Wait for fade-out to complete
+        }, { once: true }); // The event will only fire once
+
+        // Calculate current Independence Day year
+        const currentYear = new Date().getFullYear();
+        const independenceDayYear = 1947;
+        const independenceAnniversary = currentYear - independenceDayYear;
+        independenceYearEl.textContent = `${independenceAnniversary}th`;
+        
+        // Countdown Timer
+        const independenceDay = new Date(`August 15, ${currentYear} 00:00:00`);
+        const nextIndependenceDay = independenceDay < new Date() ? new Date(`August 15, ${currentYear + 1} 00:00:00`) : independenceDay;
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = nextIndependenceDay - now;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            daysEl.textContent = String(days).padStart(2, '0');
+            hoursEl.textContent = String(hours).padStart(2, '0');
+            minutesEl.textContent = String(minutes).padStart(2, '0');
+            secondsEl.textContent = String(seconds).padStart(2, '0');
+            daysLeftMsgEl.textContent = `${days} day${days !== 1 ? 's' : ''}`;
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('countdown-timer').innerHTML = "<h2>Happy Independence Day!</h2>";
+                daysLeftMsgEl.textContent = "Today is";
+            }
+        }
+        
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        
+        function displayRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            selectedQuote = quotes[randomIndex];
+            quoteEl.textContent = `"${selectedQuote.quote}"`;
+            quoteAuthorEl.textContent = `- ${selectedQuote.author}`;
+        }
+        
+        generateBtn.addEventListener('click', () => {
+            const userName = nameInput.value.trim();
+            if (userName === "") {
+                alert("Please enter your name!");
+                return;
+            }
+            greetingMessageEl.innerHTML = `Wishing you a proud and joyous Independence Day, <strong>${userName}</strong>! May the tricolor always fly high.`;
+            nameInput.style.display = 'none';
+            generateBtn.style.display = 'none';
+            shareBtn.style.display = 'block';
+            triggerFireworks();
+        });
+        
+        shareBtn.addEventListener('click', () => {
+            const userName = nameInput.value.trim();
+            const message = `🇮🇳 Happy Independence Day from ${userName}! 🇮🇳\n\n"${selectedQuote.quote}" - ${selectedQuote.author}\n\nCheck out this cool greeting I made:\n${window.location.href}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        });
+        
+        function triggerFireworks() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => createFirework(container), i * 50);
+            }
+        }
+        
+        function createFirework(container) {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            const rect = container.getBoundingClientRect();
+            const x = Math.random() * rect.width;
+            const y = Math.random() * rect.height;
+            firework.style.left = `${x}px`;
+            firework.style.top = `${y}px`;
+            const color = ['var(--saffron)', 'var(--white)', 'var(--green)'][Math.floor(Math.random() * 3)];
+            firework.style.backgroundColor = color;
+            for(let i=0; i<15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework';
+                particle.style.position = 'absolute';
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.backgroundColor = color;
+                const angle = Math.random() * 360;
+                const distance = Math.random() * 50 + 20;
+                particle.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+                requestAnimationFrame(() => {
+                   particle.style.transform = `translate(${Math.cos(angle * Math.PI/180) * distance}px, ${Math.sin(angle * Math.PI/180) * distance}px) scale(0)`;
+                   particle.style.opacity = '0';
+                });
+                container.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+        
+        window.onload = () => {
+            updateCountdown();
+            displayRandomQuote();
+        };
+
+    </script>
+    
+    <!-- Ads Script Start -->
+    <div style="text-align: center; margin-top: 20px;">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '7736fefe82a6c181674f5066abb042be',
+                'format' : 'iframe',
+                'height' : 60,
+                'width' : 468,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/7736fefe82a6c181674f5066abb042be/invoke.js"></script>
+    </div>
+    <!-- Ads Script End -->
+
+</body>
+</html>
